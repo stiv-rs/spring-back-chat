@@ -1,6 +1,8 @@
 package com.digital.chat.springback.controllers;
 
 import com.digital.chat.springback.models.documents.Mensaje;
+import com.digital.chat.springback.models.service.ChatService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,10 @@ import java.util.Random;
 
 @Controller
 public class ChatController {
+
+    @Autowired
+    private ChatService chatService;
+
     private String[] colores = {"red","green","blue","magenta","purple","orange"};
     @MessageMapping("/mensaje")
     @SendTo("/chat/mensaje")
@@ -18,6 +24,8 @@ public class ChatController {
         if (mensaje.getTipo().equals("NUEVO_USUARIO")){
             mensaje.setColor(colores[new Random().nextInt(colores.length)]);
             mensaje.setTexto("Nuevo usuario");
+        }else {
+            chatService.gusardar(mensaje);
         }
         return mensaje;
     }
@@ -26,6 +34,6 @@ public class ChatController {
     @SendTo("/chat/escribiendo")
     public String avisarEscritura(String usrname){
         return usrname.concat(" Esta escribiendo...");
-    }   
+    }
 
 }
